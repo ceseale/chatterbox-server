@@ -27,9 +27,13 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
+
+  //this console.log runs each time this requestHandler function is invoked
+  //request object has some properties such as method url
   console.log("Serving request type " + request.method + " for url " + request.url);
 
   // The outgoing status.
+  // This particular code means the request was fulfilled
   var statusCode = 200;
 
   // See the note below about CORS headers.
@@ -70,4 +74,9 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
+
+//LAUREN
+//here ive added the request handler to the exports
+exports.requestHandler = requestHandler;
+
 
