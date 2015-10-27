@@ -12,6 +12,17 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var messages = {results : 
+  [
+    {
+      username: 'shawndrost',
+      text: 'trololo',
+      roomname: '4chan'
+    }
+  ] 
+};
+
+
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -47,16 +58,67 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+      response.writeHead(statusCode, headers);
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
   // response.end() will be the body of the response - i.e. what shows
   // up in the browser.
   //
-  // Calling .end "flushes" the response's internal buffer, forcing
-  // node to actually send all the data over to the client.
-  response.end("Hello, World!");
+ 
+  if (request.method === "GET" ) {
+    if (request.url === "/classes/messages") {
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify(messages));
+    } else {
+      response.writeHead(statusCode, headers);
+
+      response.end("was a get but wasnt favicon")
+    }
+  } else if(request.method === "POST"){ 
+     
+    if(request.url === "/classes/messages"){
+      var body = ''
+      request.on('data', function(chunk){
+        body += chunk
+        console.log(chunk);
+      })
+
+      request.on('end', function(){ 
+        console.log(body);
+        var message = JSON.parse(body);
+        message['createdAt'] = Date.now();
+        messages.results.push(message); 
+        console.log(message);
+        statusCode = 200;
+        response.writeHead(statusCode, headers);
+        response.end();
+      })
+      // console.log(response); 
+    }
+ } else if(request.method === "OPTIONS") {
+      response.end();
+ }
+
+
+
+    //response.end() with the messages array
+    // var outData = {results : messages };
+    // response.write(JSON.stringify(outData));
+
+  // // else if request.method is POST
+  // } else if (request.method === "POST") {
+  //   //get the data from the request and push it to messages array
+  //   console.log('Got a POST request');
+  //   messages.push(request.body.message);
+  //   response.end('OK');
+  // }
+  //   // response.end('OK');
+
+  // // Calling .end "flushes" the response's internal buffer, forcing
+  // // node to actually send all the data over to the client.
+  // response.end();
+
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
